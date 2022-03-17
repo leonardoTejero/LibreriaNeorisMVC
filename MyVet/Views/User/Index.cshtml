@@ -1,0 +1,86 @@
+﻿
+@{
+     ViewData["Title"] = "Usuarios";
+}
+
+<h1>Listado de Usuarios </h1>
+
+<div class="row">
+
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+
+         <tbody id="cuerpoUsers"></tbody>
+    </table>
+
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+    var listaUsers= [];
+
+    $(document).ready(function () {
+       
+       getAllUsers();
+    });
+
+    function getAllUsers()
+    {
+        modalProcesando(true);
+        $.ajax({
+            url: '@Url.Action("GetAllUsers", "User")',
+            method: 'GET',
+            dataType: "json",
+            success: function (data) {
+                modalProcesando(false);
+
+                console.log(data);
+
+                if(data.isSuccess)
+                {
+                    listaUsers = data.result;
+                    cargarGridUsers(listaUsers);
+
+                    console.log(listaUsers);
+                }else{
+                    Swal.fire(
+                                'Opps!',
+                                data.message,
+                                'error');
+                }
+               
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                    modalProcesando(false);
+                    console.error(xhr, textStatus, errorThrown);
+                }
+         });
+    }
+
+    function cargarGridUsers(data){
+        $("#cuerpoUsers").html("");
+
+        for(var i=0; i<data.length; i++){
+            var tr=`
+             <tr>
+                <th>`+ data[i].name+ `</th>
+                <th> `+ data[i].lastName +`</th>
+                <th> `+ data[i].email +`</th>
+                <td>
+                </td>
+            </tr>
+            `;
+            $("#cuerpoUsers").append(tr);
+        }
+    }
+  
+
+
+</script>
